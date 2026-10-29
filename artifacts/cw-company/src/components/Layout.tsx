@@ -1,0 +1,123 @@
+import { Link, useLocation } from "wouter";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Package,
+  Wrench,
+  Wallet,
+  Menu as MenuIcon,
+  ChevronLeft,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { MobileFrame } from "@/layouts/MobileFrame";
+import type { ReactNode } from "react";
+
+export { MobileFrame };
+
+const tabs = [
+  { path: "/", label: "Inicio", icon: LayoutDashboard },
+  { path: "/bookings", label: "Reservas", icon: ClipboardList },
+  { path: "/earnings", label: "Ingresos", icon: Wallet },
+  { path: "/profile", label: "Menú", icon: MenuIcon },
+];
+
+const secondaryTabs = [
+  { path: "/packages", label: "Paquetes", icon: Package },
+  { path: "/services", label: "Servicios", icon: Wrench },
+];
+
+export function AppHeader({
+  title,
+  right,
+  subtitle,
+  back,
+}: {
+  title: string;
+  subtitle?: string;
+  right?: ReactNode;
+  /** When provided, renders a back chevron. Uses browser history when available, falls back to this path. */
+  back?: string;
+}) {
+  const [, navigate] = useLocation();
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+    } else if (back) {
+      navigate(back);
+    }
+  };
+  return (
+    <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-2 py-3 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-1 min-w-0 flex-1">
+        {back && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 -ml-1"
+            data-testid="button-back"
+            aria-label="Volver"
+            onClick={handleBack}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+        )}
+        <div className={cn("min-w-0", !back && "pl-2")}>
+          <h1
+            className="text-lg font-semibold leading-tight truncate"
+            data-testid="app-header-title"
+          >
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground truncate">{subtitle}</p>
+          )}
+        </div>
+      </div>
+      <div className="flex items-center gap-2 pr-2">{right}</div>
+    </header>
+  );
+}
+
+function BottomNav() {
+  const [location] = useLocation();
+  const isActive = (p: string) => (p === "/" ? location === "/" : location.startsWith(p));
+  return (
+    <nav className="sticky bottom-0 z-30 bg-background border-t">
+      <ul className="grid grid-cols-4">
+        {tabs.map((t) => {
+          const Icon = t.icon;
+          const active = isActive(t.path);
+          return (
+            <li key={t.path}>
+              <Link
+                href={t.path}
+                data-testid={`nav-${t.path === "/" ? "home" : t.path.slice(1)}`}
+                className={cn(
+                  "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium hover-elevate active-elevate-2",
+                  active ? "text-primary" : "text-muted-foreground",
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{t.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+export function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <MobileFrame>
+      <main className="flex-1 overflow-y-auto pb-4">{children}</main>
+      <BottomNav />
+    </MobileFrame>
+  );
+}
+
+export function SecondaryNavLink() {
+  return secondaryTabs;
+}
