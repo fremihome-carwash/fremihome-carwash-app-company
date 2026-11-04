@@ -9,7 +9,7 @@ Mobile-first web app (Spanish, Mexico) for car wash companies to manage their as
 - Backend único: ver `../new-server/` (puerto 8080). Stack completo: `../scripts/start-all.sh` / `../scripts/stop-all.sh`.
 - Frontend empresa: `pnpm --filter @workspace/cw-company run dev` (puerto 5174)
 - `pnpm run typecheck` — typecheck del frontend
-- El proxy `/api → http://localhost:8080` está en `artifacts/cw-company/vite.config.ts` (override con `API_PROXY_TARGET`).
+- El proxy `/api → http://localhost:8080` está en `artifacts/cw-company/vite.config.ts` (override con `EXPO_PUBLIC_API_URL`).
 
 Test creds (bypass dev del new-server): `admin` / `12345`
 
